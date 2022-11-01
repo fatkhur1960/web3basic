@@ -1,11 +1,14 @@
 import Web3 from 'web3'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function Home() {
   const [web3, setWeb3] = useState(null)
   const [connected, setConnected] = useState(false)
   const [account, setAccount] = useState(null)
   const [balance, setBalance] = useState(0.0)
+
+  const [todos, setTodos] = useState([]);
+  const inputRef = useRef();
 
   const connectToWallet = async () => {
     if (process.isBrowser || typeof window !== 'undefined') {
@@ -31,18 +34,46 @@ export default function Home() {
     setConnected(false)
   }
 
+  const onAddToDo = (e) => {
+    e.preventDefault();
+    let data = [...todos]
+    data.push(inputRef.current.value)
+    setTodos(data)
+
+    inputRef.current.value = ''
+  }
 
   return (
-    <>
+    <div className='App'>
       {!connected && <button onClick={connectToWallet}>Connect Wallet</button>}
 
       {connected && (
         <>
           <button onClick={disconnectWallet}>Disconnect Wallet</button>
-          <h1>{account}</h1>
-          <p>balance: {web3.utils.fromWei(web3.utils.toBN(balance), "ether")}</p>
+          <h3>
+            Current account <br></br> {account}
+          </h3>
+
+          <form onSubmit={onAddToDo}>
+            <input
+              label="Insert Todo"
+              ref={inputRef}
+            />
+            <button type="submit">
+              ADD
+            </button>
+          </form>
+
+          <h3>Todos</h3>
+          <ul>
+            {todos?.map((todo, i) => (
+              <li key={i}>
+                <p>{todo}</p>
+              </li>
+            ))}
+          </ul>
         </>
       )}
-    </>
+    </div>
   )
 }
