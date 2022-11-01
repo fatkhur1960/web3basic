@@ -1,11 +1,13 @@
 import Web3 from 'web3'
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import Tasks from "../lib/abis/Tasks.json"
 
 export default function Home() {
   const [web3, setWeb3] = useState(null)
   const [connected, setConnected] = useState(false)
   const [account, setAccount] = useState(null)
   const [balance, setBalance] = useState(0.0)
+  const [taskInstance, setTaskInstance] = useState(null)
 
   const [todos, setTodos] = useState([]);
   const inputRef = useRef();
@@ -29,16 +31,54 @@ export default function Home() {
     }
   }
 
+  const loadTasks = useCallback(async () => {
+    const _task = await taskInstance.methods.getTasks().call()
+    setTodos(_task)
+  }, [taskInstance])
+
+  const init = useCallback(async () => {
+    if (web3 !== null) {
+      const networkId = await web3.eth.net.getId();
+      console.log("🚀 ~ file: index.js ~ line 35 ~ init ~ networkId", networkId)
+
+      const network = Tasks.networks[networkId];
+      console.log("🚀 ~ file: index.js ~ line 40 ~ network", network.address)
+
+      const taskInstance_ = new web3.eth.Contract(Tasks.abi, network.address)
+      // console.log("🚀 ~ file: index.js ~ line 44 ~ taskInstance_", taskInstance_)
+      if (taskInstance_) {
+        setTaskInstance(taskInstance_)
+        await loadTasks();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [web3])
+
+  useEffect(() => {
+    init()
+  }, [init]);
+
   const disconnectWallet = () => {
     setWeb3(null)
     setConnected(false)
   }
 
-  const onAddToDo = (e) => {
+  const onAddToDo = async (e) => {
     e.preventDefault();
-    let data = [...todos]
-    data.push(inputRef.current.value)
-    setTodos(data)
+    const value = inputRef.current.value;
+    if (value) {
+      await taskInstance.methods.
+        setTasks(value).
+        send({ from: account }).
+        then(async (res) => {
+          console.log("🚀 ~ file: index.js ~ line 74 ~ then ~ res", res)
+          if (res.status) {
+            await loadTasks()
+          } else {
+            console.log("Failed creating task")
+          }
+        })
+    }
 
     inputRef.current.value = ''
   }
