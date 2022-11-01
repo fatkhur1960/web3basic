@@ -1,34 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Prerequisites
 
-## Getting Started
+In order to run the Truffle box, you will need [Node.js](https://nodejs.org). Version 10.x.y works best and 
+I've found it helpful to install nvm (https://github.com/nvm-sh/nvm). In order install these dependencies, you will also need [Python](https://www.python.org) (version 2.7.x) and
+[git](https://git-scm.com/downloads). You will also need the [MetaMask](https://metamask.io/) plugin for Chrome.
 
-First, run the development server:
+## Building
 
-```bash
-npm run dev
-# or
-yarn dev
+1. Install truffle and an Ethereum client. If you don't have a test environment, I recommend ganache-cli
+  ```bash
+  npm install -g truffle
+  npm install -g ganache-cli
+  ```
+2. Run your Ethereum client. For Ganache CLI:
+  ```bash
+  ganache-cli
+  ```
+  Note the mnemonic 12-word phrase printed on startup, you will need it later.
+
+3. Make sure `truffle-config.js` is configured to use your test environment.
+
+4. This box is configured to automatically compile and migrate, but you may need to run the command again or
+ `truffle migrate --reset` if there were any snags in the unboxing process.
+```
+truffle compile && truffle migrate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Configuration
+1. In order to connect with the Ethereum network, you will need to configure MetaMask
+2. Log into the `ganache-cli` test accounts in MetaMask, using the 12-word phrase printed earlier. 
+A detailed explaination of how to do this can be found [here](https://truffleframework.com/docs/truffle/getting-started/truffle-with-metamask)
+3. Point MetaMask to `ganache-cli` by connecting to the network `localhost:8545` 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Running
 
-## Learn More
+1. Dependencies are automatically installed with Yarn. Run the app using Yarn:
+```bash
+yarn start
+```
+The app is now served on localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+2. Making sure you have configured MetaMask, visit http://localhost:3000 in your browser.
